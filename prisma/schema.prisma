@@ -1,0 +1,44 @@
+// This is your Prisma schema file,
+// learn more about it in the docs: https://pris.ly/d/prisma-schema
+
+generator client {
+  provider = "prisma-client-js"
+}
+
+datasource db {
+  provider = "mysql"
+  url      = env("DATABASE_URL")
+}
+
+model Users {
+  userId Int @id @default(autoincrement()) @map("userId")
+  userName String @map("userName")
+  email String @unique @map("email")
+  password String @map("password")
+
+  resume Resume[]
+
+  @@map("Users")
+}
+
+enum resumestatus {
+  APPLY
+  DROP
+  PASS
+  INTERVIEW1
+  INTERVIEW2
+  FINAL_PASS
+}
+
+model Resume {
+  resumeId Int @id @default(autoincrement()) @map("resumeId")
+  userId Int @map("userId")
+  title String @map("title")
+  intro String @db.Text @map("intro")
+  resumeStatus resumestatus @default(APPLY) @map("resumeStatus")
+  createdAt DateTime @default(now()) @map("createdAt")
+
+  user Users @relation(fields : [userId], references : [userId], onDelete : Cascade)
+
+  @@map("Resume")
+}
